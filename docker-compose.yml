@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    image: telegram-notifier:3.9
+    container_name: notifier
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      AUTH_USER: ""
+      AUTH_PASS: ""
+      TELEGRAM_BOT_ID: ""
+      TELEGRAM_SREGROUP_ANNOUNCEMENTS: ""
+      TELEGRAM_DEVELOPERGROUP: ""
+      MESSAGE_THREAD_ID: ""
+      TELEGRAM_CHANNEL: "-"
+    volumes:
+      - ./logs:/app/logs
+      - ./html:/app/html
