@@ -287,12 +287,12 @@ flask run --host 0.0.0.0 --port 8080
 
 ```bash
 # Health check (no auth)
-curl -G http://192.168.9.125:8080/health
+curl -G http://192.168.10.1:8080/health
 
 # Send basic developers notification
 curl -G -u $AUTH_USER:$AUTH_PASS \
      --data-urlencode "text=Deployment complete" \
-     http://192.168.9.125:8080/notify_developers
+     http://192.168.10.1:8080/notify_developers
 
 # Trigger developers cooldown notification
 curl -G -u $AUTH_USER:$AUTH_PASS \
