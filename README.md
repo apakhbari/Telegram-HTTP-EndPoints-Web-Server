@@ -95,9 +95,9 @@ Set the following environment variables (e.g. in a `.env` file or your process m
 | `AUTH_USER`                       | Username for Basic Authentication                           |
 | `AUTH_PASS`                       | Password for Basic Authentication                           |
 | `TELEGRAM_BOT_ID`                 | Your Telegram Bot API token                                 |
-| `TELEGRAM_Channel_SubChannel` | Chat ID for SRE announcements group                         |
-| `TELEGRAM_GROUP`        | Chat ID for developers notifications                             |
-| `MESSAGE_THREAD_ID`               | Thread ID (for reply threads) in SRE announcements channel  |
+| `TELEGRAM_Channel_SubChannel` | Chat ID for announcements group and its subchannel                         |
+| `TELEGRAM_GROUP`        | Chat ID for group notifications                             |
+| `MESSAGE_THREAD_ID`               | Thread ID (for reply threads) in announcements channel  |
 | `TELEGRAM_CHANNEL`                | Fallback channel ID used by `/test` route                   |
 | *(Optional)* proxy variables      | Hard-coded in `app.py`; change the `PROXIES` list as needed |
 
@@ -269,7 +269,7 @@ flask run --host 0.0.0.0 --port 8080
 # Health check (no auth)
 curl -G http://192.168.10.1:8080/health
 
-# Send basic developers notification
+# Send basic notification
 curl -G -u $AUTH_USER:$AUTH_PASS \
      --data-urlencode "text=Deployment complete" \
      http://192.168.10.1:8080/notify_group
