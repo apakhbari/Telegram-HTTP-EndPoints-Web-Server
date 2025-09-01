@@ -1,4 +1,4 @@
-# Telegram Notifier Web-Server
+# Telegram HTTP EndPoints Web-Server
 
 ```
  __    _  _______  _______  ___   _______  ___   _______  ______        _     _  _______  _______         _______  _______  ______    __   __  _______  ______   
@@ -24,19 +24,20 @@
 - [Directory Structure](#directory-structure)  
 - [Available Routes](#available-routes)  
   - [Health Check](#health-check)  
-  - [Test Message](#test-message)  
-  - [Notify SRE](#notify-sre)  
-  - [Notify SRE (OpenCVE)](#notify-sre-opencve)  
-  - [Notify SRE (Extensive)](#notify-sre-extensive)  
-  - [Notify developers](#notify-developers)  
-  - [Notify developers With Cooldown](#notify-developers-cooldown)  
-  - [Notify developers Setup](#notify-developers-setup)  
+  - [Test Message](#test-message)
+
+  - [Notify Channel](#notify-channel)
+  - [Notify Channel (Extended)](#notify-channel-extended)
+  - [Notify Channel (Extended With more Data)](#notify-channel-extended-with-more-data)
+  - [Notify Group](#notify-group)
+  - [Notify Group With Cooldown](#notify-group-with-cooldown)
+  - [Notify Group Setup](#notify-group-setup)  
   - [Document Generated](#document-generated)  
   - [Send File](#send-file)  
   - [List Directory](#list-directory)  
   - [Serve Static HTML](#serve-static-html)  
 - [Examples (curl)](#examples-curl)  
-- [Acknowledgment](#Acknowledgment)  
+- [Acknowledgment](#acknowledgment)  
 
 ---
 
@@ -66,8 +67,8 @@
 
 1. **Clone the repository**  
 ```bash
-   git clone https://github.com/your-org/telegram-notifier-web-server.git
-   cd telegram-notifier-web-server
+   git clone https://github.com/apakhbari/Telegram-HTTP-EndPoints-Web-Server.git
+   cd Telegram-HTTP-EndPoints-Web-Server
 ````
 
 2. **Create & activate a virtual environment**
@@ -94,8 +95,8 @@ Set the following environment variables (e.g. in a `.env` file or your process m
 | `AUTH_USER`                       | Username for Basic Authentication                           |
 | `AUTH_PASS`                       | Password for Basic Authentication                           |
 | `TELEGRAM_BOT_ID`                 | Your Telegram Bot API token                                 |
-| `TELEGRAM_SREGROUP_ANNOUNCEMENTS` | Chat ID for SRE announcements group                         |
-| `TELEGRAM_developersGROUP`        | Chat ID for developers notifications                             |
+| `TELEGRAM_Channel_SubChannel` | Chat ID for SRE announcements group                         |
+| `TELEGRAM_GROUP`        | Chat ID for developers notifications                             |
 | `MESSAGE_THREAD_ID`               | Thread ID (for reply threads) in SRE announcements channel  |
 | `TELEGRAM_CHANNEL`                | Fallback channel ID used by `/test` route                   |
 | *(Optional)* proxy variables      | Hard-coded in `app.py`; change the `PROXIES` list as needed |
@@ -138,7 +139,7 @@ flask run --host 0.0.0.0 --port 8080
 * **Response**:
 
   ```
-  Telegram Notifier Web-Server V-3.9 - Live Long and Prosper
+  Telegram HTTP EndPoints WebServer V-3.9 - Live Long and Prosper
   ```
 
 ---
@@ -153,67 +154,54 @@ flask run --host 0.0.0.0 --port 8080
 
 ---
 
-### Notify SRE
+### Notify Channel
 
-* **Endpoint**: `/notify_sre`
+* **Endpoint**: `/notify_Channel`
 * **Method**: `GET`
 * **Auth**: Basic
 * **Params**: `text`
-* **Sends**: Message (threaded) to `TELEGRAM_SREGROUP_ANNOUNCEMENTS`
+* **Sends**: Message (threaded) to `TELEGRAM_Channel_SubChannel`
 
 ---
 
-### Notify SRE (OpenCVE)
+### Notify Channel (Extended)
 
-* **Endpoint**: `/notify_sre_opencve`
+* **Endpoint**: `/notify_Channel_extended`
 * **Method**: `GET`
 * **Auth**: Basic
 * **Params**: `text`
 * **Behavior**:
 
-  * Assigns one of the SRE team members based on day of week (or random on Thu/Fri).
-  * Prepends `#task` and `Assignee:` in the message.
+  * Prepends data to the message.
 
 ---
 
-### Notify SRE (Extensive)
+### Notify Channel (Extended With more Data)
 
-* **Endpoint**: `/notify_sre_extensive`
+* **Endpoint**: `/notify_Channel_extensive`
 * **Method**: `GET`
 * **Auth**: Basic
 * **Params**:
 
-  * `CI_PROJECT_NAME`
-  * `CI_ENVIRONMENT_NAME`
-  * `CI_COMMIT_MESSAGE`
-  * `CI_PROJECT_URL`
-  * `CI_PIPELINE_ID`
-  * `CI_COMMIT_BRANCH`
-  * `CI_COMMIT_TAG`
-  * `GITLAB_USER_NAME`
-* **Sends**: Detailed deployment info to `TELEGRAM_SREGROUP_ANNOUNCEMENTS`
+* **Sends**: Detailed Extended info to `TELEGRAM_Channel_SubChannel`
 
 ---
 
-### Notify developers
+### Notify Group
 
-* **Endpoint**: `/notify_developers`
+* **Endpoint**: `/notify_group`
 * **Method**: `GET`
 * **Auth**: Basic
 * **Params**: `text`
-* **Sends**: Message to `TELEGRAM_developersGROUP`
+* **Sends**: Message to `TELEGRAM_GROUP`
 
 ---
 
-### Notify developers With Cooldown
+### Notify Group With Cooldown
 
-* **Endpoint**: `/notify_developers_cooldown`
+* **Endpoint**: `/notify_group_cooldown`
 * **Method**: `GET`
 * **Auth**: Basic
-* **Params**:
-
-  * `CI_ENVIRONMENT_NAME`
-  * `GITLAB_USER_NAME`
 * **Behavior**:
 
   * Enforces 1-hour cooldown per `(user, environment)` pair.
@@ -221,15 +209,12 @@ flask run --host 0.0.0.0 --port 8080
 
 ---
 
-### Notify developers Setup
+### Notify Group Setup
 
-* **Endpoint**: `/notify_developers_setup`
+* **Endpoint**: `/notify_group_setup`
 * **Method**: `GET`
 * **Auth**: Basic
-* **Params**:
 
-  * `CI_ENVIRONMENT_NAME`
-  * `GITLAB_USER_NAME`
 * **Behavior**: Similar 1-hour cooldown logic; different message text.
 
 ---
@@ -239,15 +224,10 @@ flask run --host 0.0.0.0 --port 8080
 * **Endpoint**: `/document_generated`
 * **Method**: `GET`
 * **Auth**: Basic
-* **Params**:
 
-  * `Version_Tag`
-  * `Host`
-  * `GITLAB_USER_NAME`
-  * `CI_COMMIT_TAG`
 * **Sends**:
 
-  * Link to HTML document and ZIP artifact in `TELEGRAM_developersGROUP`.
+  * Link to HTML document and ZIP artifact in `TELEGRAM_GROUP`.
 
 ---
 
@@ -292,11 +272,11 @@ curl -G http://192.168.10.1:8080/health
 # Send basic developers notification
 curl -G -u $AUTH_USER:$AUTH_PASS \
      --data-urlencode "text=Deployment complete" \
-     http://192.168.10.1:8080/notify_developers
+     http://192.168.10.1:8080/notify_group
 
-# Trigger developers cooldown notification
+# Trigger group cooldown notification
 curl -G -u $AUTH_USER:$AUTH_PASS \
-     --data-urlencode "CI_ENVIRONMENT_NAME=
+     --data-urlencode "VARIABLE=
 ```
 
 ## Acknowledgment
